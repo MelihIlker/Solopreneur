@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    "target": "es2018" /* Hedef ECMAScript sürümü (örn. ES2018 veya ES2020) */,
+    "module": "commonjs" /* Modül sistemi (Node.js için CommonJS) */,
+    "lib": ["es2018", "dom"],
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "allowJs": false,
+    "noEmitOnError": true,
+    "resolveJsonModule": true,
+    "baseUrl": "./",
+    "paths": {
+      "@config/*": ["src/config/*"],
+      "@models/*": ["src/models/*"],
+      "@routes/*": ["src/routes/*"],
+      "@controllers/*": ["src/controllers/*"],
+      "@middlewares/*": ["src/middlewares/*"],
+      "@utils/*": ["src/utils/*"]
+    }
+  },
+  "include": ["src/**/*.ts"] /* Derlenecek TypeScript dosyaları */,
+  "exclude": ["node_modules"] /* Derleme dışında bırakılacak dizinler */
+}
