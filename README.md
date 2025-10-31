@@ -48,7 +48,6 @@ Every table in Postgres (Supabase) has Row Level Security (RLS) enabled with `DE
 
 ```sql
 ALTER TABLE users ENABLE ROW LEVEL SECURITY;
-ALTER TABLE projects ENABLE ROW LEVEL SECURITY;
 -- No RLS policies defined = frontend cannot query
 ```
 
@@ -117,9 +116,9 @@ This isn't "clean architecture for the sake of it." It's how you maintain a code
 
 Security isn't a feature. It's the foundation.
 
-### 🐳 Dockerized Development Environment
+### 🐳 Hybrid Cloud-Native Development Environment
 
-**One command to rule them all.**
+**One command for local development, cloud services for data.**
 
 ```bash
 docker-compose up --build
@@ -128,10 +127,18 @@ docker-compose up --build
 This starts:
 - **Backend** (Express API) → `localhost:3001`
 - **Frontend** (Next.js 15) → `localhost:3000`
-- **Database** (PostgreSQL) → `localhost:5432`
-- **Cache** (Redis) → `localhost:6379`
 
-No "works on my machine" problems. No manual service setup. The entire stack is orchestrated and reproducible.
+**Database and Cache are cloud-native:**
+- **Database**: Supabase (PostgreSQL) — Managed, production-grade Postgres with RLS
+- **Cache**: Upstash (Redis) — Serverless Redis for sessions and rate limiting
+
+This hybrid architecture means:
+- **No local database setup**: Connect directly to Supabase (same credentials for dev and prod)
+- **No Redis container**: Upstash handles sessions with global replication
+- **Production parity**: Your local backend connects to the same infrastructure as production
+- **Zero "works on my machine" database issues**: Everyone uses the same cloud database
+
+No "works on my machine" problems. No manual service setup. The application code is containerized, but data services are bulletproof cloud infrastructure.
 
 ### ⚙️ CI/CD Ready
 
@@ -153,9 +160,9 @@ Production-grade automation from day one.
 - **Authentication**: Argon2 (password hashing) + Redis (session store)
 - **Validation**: Zod schemas for all inputs
 - **Logging**: Pino with structured child loggers
-- **Database**: PostgreSQL (Supabase) with `service_role` bypass
-- **Cache**: Redis for sessions and rate limiting
-- **Environment**: Docker Compose orchestration
+- **Database**: Supabase (PostgreSQL) with `service_role` bypass
+- **Cache**: Upstash (Redis) for sessions and rate limiting
+- **Environment**: Docker Compose for application services
 
 ### Frontend
 - **Framework**: Next.js 15 (App Router) with Turbopack
@@ -178,57 +185,76 @@ Production-grade automation from day one.
 - **Docker** and **Docker Compose** installed
 - **Node.js 18+** (optional, for local TypeScript checking)
 - **Git**
+- **Supabase account** (free tier available at [supabase.com](https://supabase.com))
+- **Upstash account** (free tier available at [upstash.com](https://upstash.com))
 
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/melihilker/solopreneur.git
+git clone https://github.com/melihilker/Solopreneur.git
 cd solopreneur
 ```
 
-### 2. Configure Environment Variables
+### 2. Set Up Cloud Services
+
+**Supabase (Database):**
+1. Create a new project at [supabase.com](https://supabase.com)
+2. Go to **Settings → API** to get your credentials
+3. Copy your **Project URL** and **service_role key** (not anon key!)
+
+**Upstash (Redis):**
+1. Create a new Redis database at [upstash.com](https://upstash.com)
+2. Go to your database dashboard
+3. Copy your **REST URL** and **REST Token**
+
+### 3. Configure Environment Variables
 
 Create `.env` files in the appropriate directories:
 
 **Backend (`/backend/.env`):**
 ```env
+# Node Environment
 NODE_ENV=development
-PORT=3001
 
-# Database (Supabase with service_role key)
-DATABASE_URL=postgresql://solouser:solopass@db:5432/solodb
-SUPABASE_SERVICE_ROLE_KEY=your_service_role_key_here
+# Server Configuration
+PORT=3000
+COOKIE_DOMAIN=localhost
 
-# Redis (session store)
-REDIS_URL=redis://cache:6379
+# JWT Configuration
+JWT_SECRET=your-super-secret-jwt-key-min-32-characters-long
 
-# Security
-SESSION_SECRET=your_secure_random_string_min_32_chars
+# Supabase Configuration
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+
+# Upstash Redis Configuration
+UPSTASH_REDIS_REST_URL=https://your-redis.upstash.io
+UPSTASH_REDIS_REST_TOKEN=your-redis-token
+
+# CORS Configuration
 CORS_ORIGIN=http://localhost:3000
 ```
 
 **Frontend (`/frontend/.env.local`):**
 ```env
-NEXT_PUBLIC_API_URL=http://localhost:3001
+NEXT_PUBLIC_AUTH_API_URL=http://localhost:3001/
 ```
 
-> **Note**: Use Docker service names (`db`, `cache`, `backend`) as hostnames. Docker Compose handles DNS resolution.
+> **Critical**: Use your **real** Supabase and Upstash credentials. The backend container connects directly to these cloud services.
 
-### 3. Start the Stack
+### 4. Start the Stack
 
 ```bash
 docker-compose up --build
 ```
 
-The entire application will be available at:
+The application will be available at:
 - **Frontend**: http://localhost:3000
 - **Backend API**: http://localhost:3001
-- **Database**: `localhost:5432`
-- **Redis**: `localhost:6379`
 
 Hot reload is enabled for both frontend and backend. Changes are reflected instantly.
 
-### 4. Verify the Setup
+### 5. Verify the Setup
 
 ```bash
 # Check running containers
@@ -237,6 +263,9 @@ docker-compose ps
 # View logs
 docker-compose logs -f backend
 docker-compose logs -f frontend
+
+# Test backend health
+curl http://localhost:3001/health
 ```
 
 You're ready to develop.
@@ -304,3 +333,5 @@ Built with the understanding that **convenience is temporary, but architecture i
 Open an issue or contact: [melihilker9@gmail.com](mailto:melihilker9@gmail.com)
 
 ---
+
+*"We build less, but we build it bulletproof."*
