@@ -1,0 +1,62 @@
+# Backend-specific .gitignore for Solopreneur
+# Ignore environment files (do NOT commit secrets)
+.env
+
+# Node modules and build output
+node_modules/
+dist/
+build/
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# TypeScript cache and references
+.tsbuildinfo
+
+# Coverage
+coverage/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor directories and files
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# Temporary files
+*.tmp
+*.temp
+~*$
+
+# Docker artifacts
+docker-compose.override.yml
+*.dockerignore
+
+# Prisma (if used) generated client
+node_modules/.prisma
+prisma/dev.db
+
+# Secrets and keys
+*.pem
+*.key
+*.crt
+
+# Optional: lockfiles (keep if you want to track it in repo)
+# package-lock.json
+# pnpm-lock.yaml
+# yarn.lock
+
+# Ignore local IDE/system files
+.cache/
+.parcel-cache/
+

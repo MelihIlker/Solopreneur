@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  # Backend service (builds from ./backend)
+  backend:
+    build:
+      # Build context should point to the backend folder
+      context: ./backend
+      # Dockerfile lives in the backend folder (relative to the context)
+      dockerfile: Dockerfile
+    container_name: solopreneur_backend
+    restart: unless-stopped
+    # Use the backend .env for development; keep secrets out of repo in production
+    env_file:
+      - ./backend/.env
+    ports:
+      - "3001:3001"
+    # Mount only the backend source into the container for live development.
+    volumes:
+      - ./backend:/app:delegated
+      - /app/node_modules
+    networks:
+      - solopreneur_net
+
+  # Frontend service (optional). Build context points to ./frontend
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: solopreneur_frontend
+    restart: unless-stopped
+    # Frontend local env file (Next.js typically uses .env.local)
+    env_file:
+      - ./frontend/.env.local
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app:delegated
+      - /app/node_modules
+    depends_on:
+      - backend
+    networks:
+      - solopreneur_net
+
+networks:
+  solopreneur_net:
+    driver: bridge
