@@ -1,0 +1,96 @@
+name: CodeQL Analysis
+
+on:
+  push:
+    branches: ['main']
+    paths:
+      - 'backend/**'
+      - 'frontend/**'
+      - '.github/workflows/codeql.yml'
+  pull_request:
+    branches: ['main']
+    paths:
+      - 'backend/**'
+      - 'frontend/**'
+  schedule:
+    # Run analysis every Tuesday at 2:00 AM UTC
+    - cron: '0 2 * * 2'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write
+  analyses: write
+
+jobs:
+  analyze:
+    name: Analyze with CodeQL
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        language: ['javascript-typescript']
+        include:
+          - os: ubuntu-latest
+            language: javascript-typescript
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: ${{ matrix.language }}
+          # Use queries from the latest CodeQL database
+          queries: security-extended,quality
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install backend dependencies
+        working-directory: ./backend
+        run: npm ci
+
+      - name: Install frontend dependencies
+        working-directory: ./frontend
+        run: npm ci
+
+      - name: Build backend
+        working-directory: ./backend
+        run: npm run build
+        continue-on-error: true
+
+      - name: Build frontend
+        working-directory: ./frontend
+        run: npm run build
+        continue-on-error: true
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:${{ matrix.language }}"
+          upload: true
+
+      - name: Upload SARIF to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          wait-for-processing: true
+
+  results:
+    name: Report CodeQL Results
+    runs-on: ubuntu-latest
+    needs: analyze
+    if: always()
+    steps:
+      - name: Check analysis results
+        run: |
+          echo "CodeQL analysis completed"
+          echo "View results in the Security tab of your repository"
