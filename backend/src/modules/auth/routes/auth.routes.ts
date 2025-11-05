@@ -5,6 +5,7 @@ import { ipBlocklistMiddleware } from "@shared/middleware/ip-block.middleware";
 import { AuthMiddleware } from "@shared/middleware/auth-middleware";
 import { createRateLimitMiddleware } from "@shared/middleware/createRateLimit.middleware";
 import { LOOSE_RATE_LIMIT_CONFIG, RATE_LIMIT_CONFIG } from "@config/config";
+import { csrfProtection } from "@config/csrf";
 
 const authRouter = Router();
 
@@ -18,6 +19,7 @@ authRouter.post(
   }),
   emailBlocklistMiddleware,
   ipBlocklistMiddleware,
+  csrfProtection,
   (req, res) => authController.register(req, res)
 );
 
@@ -31,6 +33,7 @@ authRouter.post(
   }),
   emailBlocklistMiddleware,
   ipBlocklistMiddleware,
+  csrfProtection,
   (req, res) => authController.login(req, res)
 );
 
@@ -44,19 +47,20 @@ authRouter.post(
   }),
   AuthMiddleware,
   ipBlocklistMiddleware,
+  csrfProtection,
   (req, res) => authController.logout(req, res)
 );
 
 // Me route
 authRouter.get(
   "/me",
-  AuthMiddleware,
-  ipBlocklistMiddleware,
   createRateLimitMiddleware({
     WINDOW_MS: LOOSE_RATE_LIMIT_CONFIG.WINDOW_MS,
     MAX_REQUESTS: LOOSE_RATE_LIMIT_CONFIG.MAX_REQUESTS,
     KEY_PREFIX: "me",
   }),
+  AuthMiddleware,
+  ipBlocklistMiddleware,
   (req, res) => authController.me(req, res)
 );
 

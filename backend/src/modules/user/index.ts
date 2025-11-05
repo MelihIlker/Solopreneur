@@ -1,3 +1,3 @@
-export * from "./services/user.service";
-export * from "./controller/user.controller";
-export * from "./routes/user.routes";
+export { userService } from "./services/user.service";
+export { userController } from "./controller/user.controller";
+export { userRouter } from "./routes/user.routes";

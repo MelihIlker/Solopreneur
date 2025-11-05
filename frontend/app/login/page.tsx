@@ -133,7 +133,7 @@ const LoginPage = () => {
                                     id="remember-me"
                                     name="remember-me"
                                     type="checkbox"
-                                    className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
+                                    className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded cursor-pointer"
                                 />
                                 <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900">
                                     Remember me
@@ -150,7 +150,7 @@ const LoginPage = () => {
                         <div>
                             <button
                                 type="submit"
-                                className="relative group overflow-hidden w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-300"
+                                className="relative group overflow-hidden w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-300 cursor-pointer"
                             >
                                 <span className="absolute inset-0 w-full h-full bg-green-700 scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-300 ease-out"></span>
                                 <span className="relative">Sign in</span>

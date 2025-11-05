@@ -408,6 +408,22 @@ Solopreneur is built with security as a foundational principle. Every layer impl
   - Secure flag in production
   - 3-hour default session cookie age (configurable)
 
+- **CSRF Protection** (Cross-Site Request Forgery):
+  - Token-based CSRF protection with Redis session storage
+  - Tokens stored securely in Redis (not in cookies) with 30-minute TTL
+  - Session ID derived from user's access_token (authenticated users only)
+  - Frontend retrieves token from `/api/csrf-token` endpoint with `X-Session-ID` header
+  - Token validated using constant-time comparison to prevent timing attacks
+  - Token sent via `X-CSRF-Token` header on all state-changing requests
+  - GET requests generate token (read-only requests)
+  - POST/PUT/DELETE/PATCH requests validate token and refresh it
+  - Unauthenticated users cannot access protected endpoints (400 error if no session ID)
+  - Missing CSRF token returns 403 Forbidden
+  - Invalid CSRF token returns 403 Forbidden
+  - Token automatically refreshed after each successful POST/PUT/DELETE/PATCH request
+  - Protects against unauthorized form submissions from malicious sites
+  - Per-tab isolation: Each browser tab maintains its own session via unique session ID
+
 ### Honeypot Bot Detection
 
 - **Registration Form**: Hidden honeypot field catches automated submissions

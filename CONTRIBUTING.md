@@ -1,67 +1,72 @@
 # Contributing to Solopreneur
 
-Welcome to Solopreneur. This is **not** a tutorial project. Every architectural decision here is deliberate, senior-level, and built to be bulletproof. We have zero tolerance for "duct tape" code.
+Welcome to Solopreneur. This is a production-grade project where every architectural decision is documented and intentional.
 
 ## Core Architectural Philosophy
 
-Before contributing, you must understand why this project makes the choices it does. These aren't preferences—they're engineered decisions.
+Before contributing, it's important to understand the design principles behind this project.
 
-### Why Stateful (Redis Session) Authentication?
+### Session-Based Authentication
 
-**We explicitly reject stateless JWT.**
+Solopreneur uses stateful Redis sessions instead of JWT tokens.
 
-Stateful sessions stored in Redis give us:
-- **Full revocability**: `destroyAllUserSessions` works instantly across all devices
-- **Real-time control**: Invalidate compromised sessions server-side without waiting for token expiry
-- **Security by default**: No token refresh vulnerabilities, no XSS token theft surface area
-- **Audit capability**: Complete session tracking and anomaly detection
+Benefits:
+- **Full revocability**: Sessions can be invalidated instantly across all devices
+- **Real-time control**: Compromised sessions can be revoked server-side immediately
+- **Audit trail**: Complete session tracking for security monitoring
+- **Simplified refresh**: No token expiration or refresh token complexity
 
-This is how senior systems handle authentication. JWTs are convenient, not secure.
+### Database Security with Row Level Security
 
-### Why "Locked Vault" Database Architecture?
+The frontend has no direct database access.
 
-**The frontend has ZERO direct database access.**
+Every table in Postgres (Supabase) has Row Level Security enabled with a default-deny policy:
 
-Our Postgres (Supabase) configuration:
 ```sql
 ALTER TABLE [every_table] ENABLE ROW LEVEL SECURITY;
--- DEFAULT DENY for all tables
+-- No policies = frontend cannot query
 ```
 
-The backend uses the `service_role` key to bypass RLS. This means:
-- **Single source of truth**: All business logic lives in backend services
-- **No client-side vulnerabilities**: Frontend can't be tricked into malicious queries
-- **Complete validation**: Every database interaction goes through Zod schemas and service-layer logic
-- **Real authorization**: Not client-configurable RLS policies, but server-enforced rules
+The backend uses the `service_role` key to bypass RLS. This ensures:
+- All business logic validation happens server-side
+- Frontend cannot be exploited to access unauthorized data
+- Complete data isolation at the database level
 
-The database is a locked vault. Only the backend has the key.
+### Rate Limiting Strategy
 
-### Why "Factory Pattern" Rate Limiting?
+Rate limits are configured per-endpoint to match specific threat models:
 
-**Every route gets atomic, purpose-specific rate limits.**
-
-The `createRateLimitMiddleware` factory allows:
 ```typescript
 createRateLimitMiddleware({ WINDOW_MS: 900000, MAX_REQUESTS: 5, KEY_PREFIX: 'login' })  // Login
 createRateLimitMiddleware({ WINDOW_MS: 60000, MAX_REQUESTS: 100, KEY_PREFIX: 'profile' })  // Public API
 ```
 
-This prevents:
-- Code duplication (DRY principle)
-- Blanket rate limits that are either too strict or too loose
-- Configuration drift across routes
+This approach:
+- Eliminates code duplication
+- Allows endpoint-specific protection
+- Prevents configuration drift across routes
 
-Each endpoint has its own threat model. Rate limits reflect that.
+### CSRF Protection
+
+CSRF tokens are stored server-side in Redis, tied to user sessions.
+
+Solopreneur's approach:
+- **Session-tied tokens**: Each CSRF token is tied to the user's `access_token` (session ID)
+- **Redis storage**: Tokens live server-side with 30-minute TTL
+- **Header-based transmission**: Tokens sent via `X-CSRF-Token` header (not cookies)
+- **Constant-time comparison**: Token validation uses `timingSafeEqual` to prevent timing attacks
+- **Per-request refresh**: Token regenerates after each successful POST/PUT/DELETE/PATCH request
+- **Per-tab isolation**: Different browser tabs have different session IDs (derived from `access_token`)
+
+This provides strong protection against Cross-Site Request Forgery attacks without cookie vulnerabilities.
 
 ## Git Workflow
 
 ### Branch Strategy
 
-The `main` branch is **sacred**. It represents production-ready code.
+The `main` branch represents production-ready code.
 
-**DO NOT** create module-level branches like `feature/user` or `feature/auth`. These create merge hell and stale code.
-
-**DO** follow this workflow:
+Follow this workflow:
 
 1. **Create task-specific branches from `main`:**
    ```bash
@@ -72,10 +77,10 @@ The `main` branch is **sacred**. It represents production-ready code.
    git checkout -b fix/session-serialization-bug
    ```
 
-2. **Write your code** with the same architectural rigor you see in existing modules
+2. **Write your code** following the existing architectural patterns
 
 3. **Self-review before opening PR:**
-   - Does this follow the Controller (dumb) → Service (brain) → Repository (limbs) pattern?
+   - Does this follow the Controller → Service → Repository pattern?
    - Are all inputs validated with Zod schemas?
    - Does this introduce any timing attack vulnerabilities?
    - Is rate limiting appropriate for this endpoint?
@@ -275,8 +280,6 @@ Review your own PR before requesting review from others. Pretend you're seeing t
 - **Features:** Open an issue with use case and proposed design
 - **Security:** Email security@solopreneur.dev (do not open public issues)
 
-Welcome to the team. Write code you'd be proud to debug at 3 AM.
-
 ---
 
-*This is a senior-level project. Contribute accordingly.*
+Thank you for contributing to Solopreneur.

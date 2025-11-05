@@ -19,7 +19,8 @@
       "@shared/*": ["./src/shared/*"],
       "@utils/*": ["./src/utils/*"],
       "@config/*": ["./src/config/*"],
-      "@lib/*": ["./src/lib/*"]
+      "@lib/*": ["./src/lib/*"],
+      "@/*": ["./src/*"]
     },
     "types": ["node", "jest"]
   },

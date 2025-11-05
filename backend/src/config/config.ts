@@ -120,7 +120,8 @@ export const PREFIX_CONFIG = {
   BLOCKED_IP_PREFIX: "blocked_ip:",
   BLOCKED_EMAIL_PREFIX: "blocked_email:",
   FAILED_LOGIN_PREFIX: "failed_login:",
-  LOCK_ACCOUNT_PREFIX: "lock_account:"
+  LOCK_ACCOUNT_PREFIX: "lock_account:",
+  CSRF_PREFIX: "csrf:",
 };
 
 /**

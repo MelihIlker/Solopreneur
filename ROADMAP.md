@@ -2,15 +2,15 @@
 
 ## Vision
 
-Solopreneur is not another SaaS boilerplate. It's a **security-first, senior-level** client and project management platform built for solo entrepreneurs who refuse to compromise on architecture.
+Solopreneur is a production-grade client and project management platform built for solo entrepreneurs. The platform prioritizes security, scalability, and clean architecture through intentional design decisions.
 
-Every feature on this roadmap reflects our core principles:
-- **Bulletproof over convenient**
-- **Stateful over stateless** (when it matters)
-- **Server control over client freedom**
-- **Zero duct tape tolerance**
+Core principles:
+- Security-first approach
+- Stateful session management
+- Server-side control and validation
+- Well-tested, maintainable code
 
-This is where we're going.
+This roadmap outlines the planned features and improvements.
 
 ---
 
@@ -20,18 +20,20 @@ The foundation. These modules establish the architectural patterns all future fe
 
 ### Authentication & User Management
 
-- [x] **Bulletproof Auth Module** ✅
-  - Stateful Redis sessions (full revocability)
-  - Timing attack prevention
-  - Multi-layer brute-force protection (IP + Device + Email)
+- [x] **Authentication Module** ✅
+  - Stateful Redis sessions with full revocation capability
+  - Timing attack prevention with constant-time comparison
+  - Multi-layer brute-force protection (IP, Device, Email)
   - Honeypot bot detection
-  - `destroyAllUserSessions` capability
+  - Session destruction on logout
+  - **CSRF Protection** with Redis token storage and per-request refresh
 
 - [x] **User Module** ✅
   - Profile management
   - Password change with current password verification
-  - Account deletion (with session cleanup)
-  - Full CRUD with proper service layer
+  - Account deletion with session cleanup
+  - Full CRUD with service layer validation
+  - **Backend & Frontend README** documentation completed
 
 ### Core Business Logic
 
@@ -59,7 +61,7 @@ The foundation. These modules establish the architectural patterns all future fe
 
 ## 🔐 Critical Authentication Flows
 
-These flows are security-critical and require the same rigor as the auth module itself.
+These flows are security-critical and require rigorous implementation.
 
 - [ ] **Email Verification Flow**
   - Secure, single-use tokens stored in Redis with TTL
@@ -86,7 +88,7 @@ These flows are security-critical and require the same rigor as the auth module 
 
 ## 🛡️ Security Enhancements
 
-The project is secure by design, but these additions raise the bar further.
+Additional security features to strengthen the platform.
 
 - [ ] **Session Anomaly Detection**
   - Geolocation changes (suspicious country-hopping)
@@ -303,7 +305,7 @@ The difference between good and great.
 
 ## 🔮 Future Exploration
 
-Ideas for after the core platform is rock-solid.
+Ideas for after the core platform is stable and well-tested.
 
 - [ ] **API for Third-Party Integrations**
   - RESTful public API
@@ -326,11 +328,9 @@ Ideas for after the core platform is rock-solid.
 
 ## Contributing to the Roadmap
 
-Have ideas? Open an issue with the `roadmap` label. But remember: every feature must justify its existence and align with our security-first, senior-level principles.
-
-**We build less, but we build it bulletproof.**
+Have ideas? Open an issue with the `roadmap` label. All features must align with Solopreneur's core principles: security, scalability, and maintainability.
 
 ---
 
-*Last updated: [Current Date]*  
+*Last updated: November 6, 2025*  
 *Project Status: MVP in Progress*

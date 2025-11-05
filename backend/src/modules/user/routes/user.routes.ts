@@ -5,6 +5,7 @@ import { LOOSE_RATE_LIMIT_CONFIG, RATE_LIMIT_CONFIG } from "@config/config";
 import { emailBlocklistMiddleware } from "@shared/middleware/email-block.middleware";
 import { AuthMiddleware } from "@shared/middleware/auth-middleware";
 import { ipBlocklistMiddleware } from "@shared/middleware/ip-block.middleware";
+import { csrfProtection } from "@config/csrf";
 
 
 export const userRouter = Router();
@@ -29,6 +30,7 @@ userRouter.put("/profile",
     }),
     AuthMiddleware,
     ipBlocklistMiddleware,
+    csrfProtection,
     (req, res) => userController.updateProfile(req, res));
 
 // Delete user profile route
@@ -40,6 +42,7 @@ userRouter.delete("/profile",
     }),
     AuthMiddleware,
     ipBlocklistMiddleware,
+    csrfProtection,
     (req, res) => userController.deleteUser(req, res));
 
 // Change user password route
@@ -51,6 +54,7 @@ userRouter.post("/change-password",
     }),
     AuthMiddleware,
     ipBlocklistMiddleware,
+    csrfProtection,
     (req, res) => userController.changePassword(req, res));
 
 // Change user email route
@@ -63,6 +67,7 @@ userRouter.post("/change-email",
     AuthMiddleware,
     ipBlocklistMiddleware,
     emailBlocklistMiddleware,
+    csrfProtection,
     (req, res) => userController.changeEmail(req, res));
 
 export default userRouter;
