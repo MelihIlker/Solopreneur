@@ -34,7 +34,7 @@ The backend follows a layered architecture pattern:
 - **Controller Layer**: Handles HTTP requests and responses
 - **Service Layer**: Contains business logic and validation
 - **Repository Layer**: Manages database operations
-=======
+
 ## 🏗️ Architecture at a Glance
 
 This is where Solopreneur differentiates itself from every "quick and dirty" project you've seen.
@@ -92,7 +92,6 @@ Rate limits are tracked in Redis with atomic `INCR` operations. No race conditio
 ### 🧩 Modular Monolith — Clear Separation of Concerns
 
 **Architecture follows the Controller (dumb) → Service (brain) → Repository (limbs) pattern.**
->>>>>>> 70883795c14534d1894550a35dab418e4e32e80f
 
 ```
 src/
