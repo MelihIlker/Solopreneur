@@ -31,7 +31,6 @@ Solopreneur is a complete solution for managing clients, projects, invoices, and
 
 The backend follows a layered architecture pattern:
 
-<<<<<<< HEAD
 - **Controller Layer**: Handles HTTP requests and responses
 - **Service Layer**: Contains business logic and validation
 - **Repository Layer**: Manages database operations
@@ -123,66 +122,17 @@ src/
 
 ### Frontend Architecture
 
-<<<<<<< HEAD
 - **Next.js 15** with App Router
 - **React 19** for component structure
 - **Tailwind CSS 4** for styling
 - **Chart.js** for data visualization
 - **Responsive Design** for all devices
-=======
-**Every security decision is deliberate.**
-
-- **Timing attack prevention**: `timingSafeEqual` for all password comparisons
-- **Honeypot bot detection**: Hidden form fields catch automated submissions
-- **Multi-layer brute-force protection**:
-  - IP-based rate limiting
-  - Device fingerprint tracking
-  - Email-specific attempt limits
-- **Structured logging**: Pino child loggers with context (userId, IP, deviceId) for forensics
-
-Security isn't a feature. It's the foundation.
-
-### 🐳 Hybrid Cloud-Native Development Environment
-
-**One command for local development, cloud services for data.**
-
-```bash
-docker-compose up --build
-```
-
-This starts:
-- **Backend** (Express API) → `localhost:3001`
-- **Frontend** (Next.js 15) → `localhost:3000`
-
-**Database and Cache are cloud-native:**
-- **Database**: Supabase (PostgreSQL) — Managed, production-grade Postgres with RLS
-- **Cache**: Upstash (Redis) — Serverless Redis for sessions and rate limiting
-
-This hybrid architecture means:
-- **No local database setup**: Connect directly to Supabase (same credentials for dev and prod)
-- **No Redis container**: Upstash handles sessions with global replication
-- **Production parity**: Your local backend connects to the same infrastructure as production
-- **Zero "works on my machine" database issues**: Everyone uses the same cloud database
-
-No "works on my machine" problems. No manual service setup. The application code is containerized, but data services are bulletproof cloud infrastructure.
-
-### ⚙️ CI/CD Ready
-
-**GitHub Actions pipelines for continuous integration.**
-
-- `backend-ci.yml`: Linting → Testing → Build verification on every PR
-- `frontend-ci.yml`: Next.js build checks and TypeScript validation
-- **Deployment ready**: Docker images push to registry, SSH to production server, zero-downtime deployment
-
-Production-grade automation from day one.
->>>>>>> 70883795c14534d1894550a35dab418e4e32e80f
 
 ---
 
 ## 🛠️ Tech Stack
 
 ### Backend
-<<<<<<< HEAD
 - **Runtime**: Node.js 18+ with TypeScript 5.9
 - **Framework**: Express.js 5.1 with Helmet security headers
 - **Database**: Supabase (PostgreSQL) with Row Level Security
@@ -191,16 +141,6 @@ Production-grade automation from day one.
 - **Validation**: Zod schemas
 - **Logging**: Pino with structured logging
 - **Rate Limiting**: Redis-backed per-endpoint configuration
-=======
-- **Runtime**: Node.js 18+ with TypeScript 5.3
-- **Framework**: Express.js with async/await error handling
-- **Authentication**: Argon2 (password hashing) + Redis (session store)
-- **Validation**: Zod schemas for all inputs
-- **Logging**: Pino with structured child loggers
-- **Database**: Supabase (PostgreSQL) with `service_role` bypass
-- **Cache**: Upstash (Redis) for sessions and rate limiting
-- **Environment**: Docker Compose for application services
->>>>>>> 70883795c14534d1894550a35dab418e4e32e80f
 
 ### Frontend
 - **Framework**: Next.js 15 (App Router) with Turbopack
@@ -224,44 +164,17 @@ Production-grade automation from day one.
 
 ### Prerequisites
 
-<<<<<<< HEAD
 - Docker and Docker Compose
 - Git
-=======
-- **Docker** and **Docker Compose** installed
-- **Node.js 18+** (optional, for local TypeScript checking)
-- **Git**
-- **Supabase account** (free tier available at [supabase.com](https://supabase.com))
-- **Upstash account** (free tier available at [upstash.com](https://upstash.com))
->>>>>>> 70883795c14534d1894550a35dab418e4e32e80f
 
 ### 1. Clone Repository
 
 ```bash
 git clone https://github.com/melihilker/Solopreneur.git
-<<<<<<< HEAD
 cd Solopreneur
 ```
 
 ### 2. Environment Configuration
-=======
-cd solopreneur
-```
-
-### 2. Set Up Cloud Services
-
-**Supabase (Database):**
-1. Create a new project at [supabase.com](https://supabase.com)
-2. Go to **Settings → API** to get your credentials
-3. Copy your **Project URL** and **service_role key** (not anon key!)
-
-**Upstash (Redis):**
-1. Create a new Redis database at [upstash.com](https://upstash.com)
-2. Go to your database dashboard
-3. Copy your **REST URL** and **REST Token**
-
-### 3. Configure Environment Variables
->>>>>>> 70883795c14534d1894550a35dab418e4e32e80f
 
 Create `.env` files for backend and frontend:
 
@@ -270,7 +183,6 @@ Create `.env` files for backend and frontend:
 # Node Environment
 NODE_ENV=development
 
-<<<<<<< HEAD
 # Supabase Configuration
 SUPABASE_URL=your_supabase_url
 SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
@@ -279,23 +191,6 @@ SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 UPSTASH_REDIS_REST_URL=your_upstash_redis_rest_url
 UPSTASH_REDIS_REST_TOKEN=your_upstash_redis_rest_token
 
-=======
-# Server Configuration
-PORT=3000
-COOKIE_DOMAIN=localhost
-
-# JWT Configuration
-JWT_SECRET=your-super-secret-jwt-key-min-32-characters-long
-
-# Supabase Configuration
-SUPABASE_URL=https://your-project.supabase.co
-SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
-
-# Upstash Redis Configuration
-UPSTASH_REDIS_REST_URL=https://your-redis.upstash.io
-UPSTASH_REDIS_REST_TOKEN=your-redis-token
-
->>>>>>> 70883795c14534d1894550a35dab418e4e32e80f
 # CORS Configuration
 CORS_ORIGIN=http://localhost:3000
 ```
@@ -305,33 +200,17 @@ CORS_ORIGIN=http://localhost:3000
 NEXT_PUBLIC_AUTH_API_URL=http://localhost:3001/
 ```
 
-<<<<<<< HEAD
 ### 3. Start Application
-=======
-> **Critical**: Use your **real** Supabase and Upstash credentials. The backend container connects directly to these cloud services.
-
-### 4. Start the Stack
->>>>>>> 70883795c14534d1894550a35dab418e4e32e80f
 
 ```bash
 docker-compose up --build
 ```
 
-<<<<<<< HEAD
 Access the application:
 - **Frontend**: http://localhost:3000
 - **Backend API**: http://localhost:3001
 
 ### 4. Verify Setup
-=======
-The application will be available at:
-- **Frontend**: http://localhost:3000
-- **Backend API**: http://localhost:3001
-
-Hot reload is enabled for both frontend and backend. Changes are reflected instantly.
-
-### 5. Verify the Setup
->>>>>>> 70883795c14534d1894550a35dab418e4e32e80f
 
 ```bash
 # Check running containers
