@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
-import { PREFIX_CONFIG } from "src/config/config";
-import { getCache } from "src/lib/redis";
-import { appLogger } from "src/utils/logger";
+import { PREFIX_CONFIG } from "@config/config";
+import { getCache } from "@lib/redis";
+import { appLogger } from "@utils/logger";
 
 /**
  * IP blocklist middleware

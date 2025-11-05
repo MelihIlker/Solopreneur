@@ -1,4 +1,4 @@
-import { userLogger } from "src/utils/logger";
+import { userLogger } from "@utils/logger";
 import { userRepository } from "@modules/user/repositories/user.repository";
 import { UserProfile } from "@shared/types/UserInterface";
 import { sessionService } from "@modules/auth/services/session.service";

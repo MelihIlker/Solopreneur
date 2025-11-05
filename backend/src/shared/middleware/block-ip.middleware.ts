@@ -1,6 +1,6 @@
-import { PREFIX_CONFIG } from "src/config/config";
-import { setCache } from "src/lib/redis";
-import { appLogger } from "src/utils/logger";
+import { PREFIX_CONFIG } from "@config/config";
+import { setCache } from "@lib/redis";
+import { appLogger } from "@utils/logger";
 
 /**
  * Blocks an IP address for a specified duration

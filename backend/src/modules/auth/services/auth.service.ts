@@ -4,13 +4,13 @@ import {
   RegisterDto,
   RegisterResponse,
 } from "../validators/auth.validators";
-import { authLogger } from "src/utils/logger";
+import { authLogger } from "@utils/logger";
 import argon2 from "argon2";
 import { sessionService } from "./session.service";
 import { failedLoginService } from "./failed-login.service";
 import { userRepository } from "@modules/user/repositories/user.repository";
-import { PREFIX_CONFIG } from "src/config/config";
-import { getCache } from "src/lib/redis";
+import { PREFIX_CONFIG } from "@config/config";
+import { getCache } from "@lib/redis";
 
 const DUMMY_PASSWORD_HASH =
   "$argon2id$v=19$m=65536,t=3,p=4$ZHVtbXlzaWx0$dummyhashvaluefornonexistentuser";

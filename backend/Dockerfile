@@ -9,14 +9,17 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential python3 make g++ ca-certificates && rm -rf /var/lib/apt/lists/*
 
 # Copy package manifests first (leverage Docker cache)
-COPY package.json package-lock.json* ./
+COPY package.json package-lock.json ./
 
 # Install all dependencies (dev + prod) for the build
-RUN npm ci --silent
+RUN npm install --prefer-offline --no-audit
 
 # Copy source and compile
 COPY . .
 RUN npm run build
+
+# Verify dist directory was created
+RUN ls -la dist/
 
 # ---------- Runtime image
 FROM node:18-bullseye-slim AS runner
@@ -27,11 +30,15 @@ RUN useradd --system --user-group --create-home nodeuser || true
 
 ENV NODE_ENV=production
 
-# Copy only necessary files from builder
-COPY --from=builder /app/package.json ./package.json
-COPY --from=builder /app/package-lock.json* ./package-lock.json
+# Copy precompiled node_modules from builder (includes argon2 already built)
+COPY --from=builder /app/node_modules ./node_modules
 
-RUN npm ci --omit=dev --silent
+# Copy package files for reference
+COPY --from=builder /app/package.json ./
+COPY --from=builder /app/package-lock.json ./
+
+# Copy tsconfig for path resolution
+COPY --from=builder /app/tsconfig.json ./
 
 COPY --from=builder /app/dist ./dist
 
@@ -40,5 +47,5 @@ EXPOSE 3001
 
 USER nodeuser
 
-# Start the app
-CMD ["node", "dist/main.js"]
+# Start the app with tsconfig-paths register
+CMD ["node", "-r", "tsconfig-paths/register", "dist/main.js"]

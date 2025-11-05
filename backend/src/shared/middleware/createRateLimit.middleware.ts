@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
-import { PREFIX_CONFIG } from "src/config/config";
-import { incrementCache, expireCache } from "src/lib/redis";
-import { appLogger } from "src/utils/logger";
+import { PREFIX_CONFIG } from "@config/config";
+import { incrementCache, expireCache } from "@lib/redis";
+import { appLogger } from "@utils/logger";
 
 interface RateLimitConfig {
   WINDOW_MS: number;

@@ -1,173 +1,103 @@
 # Solopreneur
 
-**A security-first, full-stack client and project management platform for solo entrepreneurs—designed with senior-level architectural principles and zero tolerance for duct tape code.**
+A full-stack client and project management platform designed for solo entrepreneurs. Built with modern web technologies, security best practices, and real-time capabilities.
 
-[![CI/CD Status](https://img.shields.io/github/actions/workflow/status/melihilker/solopreneur/backend-ci.yml?branch=main&label=CI%2FCD&logo=github)](https://github.com/melihilker/solopreneur/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.3-blue?logo=typescript)](https://www.typescriptlang.org/)
-[![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?logo=docker)](https://www.docker.com/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue?logo=typescript)](https://www.typescriptlang.org/)
+[![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker)](https://www.docker.com/)
+[![Supabase](https://img.shields.io/badge/Supabase-PostgreSQL-green?logo=supabase)](https://supabase.com/)
+[![Express](https://img.shields.io/badge/Express-5.1-black?logo=express)](https://expressjs.com/)
+[![Next.js](https://img.shields.io/badge/Next.js-15-black?logo=next.js)](https://nextjs.org/)
 
 ---
 
-## 🎯 Project Philosophy
+## 📋 Overview
 
-This is **not** a SaaS boilerplate. This is **not** a tutorial project.
+Solopreneur is a complete solution for managing clients, projects, invoices, and time tracking. The application emphasizes security, scalability, and clean architecture.
 
-Solopreneur is an architectural blueprint built on the principle of **"Bulletproof over Convenient."** Every decision—from stateful sessions to locked-down databases—is engineered for security, scalability, and maintainability. If it smells like duct tape, it doesn't belong here.
-
-**Built for senior developers who refuse to compromise on architecture.**
-
----
-
-## 🖼️ Live Demo & Screenshots
-
-🚧 **Coming Soon** — Production deployment in progress
+**Key Features:**
+- Client and project management
+- Time tracking and billing
+- Invoice generation
+- Secure authentication with session-based login
+- Real-time dashboard with analytics
+- Mobile-responsive design
 
 ---
 
-## 🏗️ Architecture at a Glance
+## 🏗️ Architecture
 
-This is where Solopreneur differentiates itself from every "quick and dirty" project you've seen.
+### Backend Architecture
 
-### 🔐 Stateful (Redis) Sessions — Not Stateless JWT
+The backend follows a layered architecture pattern:
 
-**We explicitly reject stateless JWT in favor of server-controlled sessions.**
-
-- **Full revocability**: `destroyAllUserSessions` works instantly across all devices
-- **Real-time control**: Invalidate compromised sessions without waiting for token expiry
-- **Zero XSS token theft**: No tokens in localStorage or client-side JavaScript
-- **Complete audit trail**: Track every active session with geolocation and device fingerprinting
-
-Sessions are stored in Redis as JSON-serialized objects with atomic operations. This is how production systems handle authentication.
-
-### 🛡️ "Locked Vault" Database — RLS Default Deny
-
-**The frontend has ZERO direct database access.**
-
-Every table in Postgres (Supabase) has Row Level Security (RLS) enabled with `DEFAULT DENY`:
-
-```sql
-ALTER TABLE users ENABLE ROW LEVEL SECURITY;
-ALTER TABLE projects ENABLE ROW LEVEL SECURITY;
--- No RLS policies defined = frontend cannot query
-```
-
-The backend uses the `service_role` key to bypass RLS. This means:
-
-- **Single source of truth**: All business logic lives in the Service layer
-- **No client-side vulnerabilities**: Frontend can't be manipulated into malicious queries
-- **Complete validation**: Every database interaction goes through Zod schemas and service-layer authorization
-
-The database is a locked vault. Only the backend holds the key.
-
-### 🏭 Factory-Based Rate Limiting — No "One Size Fits All"
-
-**Every route gets purpose-specific, atomic rate limits.**
-
-The `createRateLimitMiddleware` factory allows per-route configuration:
-
-```typescript
-// Login endpoint: 5 attempts per 15 minutes
-router.post('/login', createRateLimitMiddleware({ 
-  windowMs: 900000, max: 5, type: 'strict' 
-}), authController.login);
-
-// Public API: 100 requests per minute
-router.get('/public', createRateLimitMiddleware({ 
-  windowMs: 60000, max: 100, type: 'loose' 
-}), controller.getPublic);
-```
-
-Rate limits are tracked in Redis with atomic `INCR` operations. No race conditions. No "good enough" blanket limits.
-
-### 🧩 Modular Monolith — Clear Separation of Concerns
-
-**Architecture follows the Controller (dumb) → Service (brain) → Repository (limbs) pattern.**
+- **Controller Layer**: Handles HTTP requests and responses
+- **Service Layer**: Contains business logic and validation
+- **Repository Layer**: Manages database operations
 
 ```
 src/
 ├── modules/
 │   ├── auth/
-│   │   ├── auth.controller.ts    # HTTP layer (validation, response)
-│   │   ├── auth.service.ts       # Business logic (the brain)
-│   │   └── auth.repository.ts    # Database operations (the limbs)
+│   │   ├── controller/
+│   │   ├── services/
+│   │   ├── repositories/
+│   │   └── routes/
+│   ├── project/
+│   ├── customer/
+│   ├── payment/
 │   └── user/
-│       ├── user.controller.ts
-│       ├── user.service.ts
-│       └── user.repository.ts
+├── shared/
+│   ├── middleware/
+│   └── types/
+└── config/
 ```
 
-- **Controllers**: Dumb. Parse requests, call services, return responses.
-- **Services**: Smart. Business logic, authorization, orchestration.
-- **Repositories**: Specialized. Database queries, nothing else.
+### Authentication & Security
 
-This isn't "clean architecture for the sake of it." It's how you maintain a codebase for years without turning it into spaghetti.
+- **Session Management**: Redis-based stateful sessions with full revocation control
+- **Password Hashing**: Argon2 for secure password storage
+- **Rate Limiting**: Per-endpoint rate limit configuration to prevent abuse
+- **Input Validation**: Zod schemas for all API inputs
+- **Database Security**: Row Level Security (RLS) enabled on all tables
 
-### 🛡️ Security-First Services
+### Frontend Architecture
 
-**Every security decision is deliberate.**
-
-- **Timing attack prevention**: `timingSafeEqual` for all password comparisons
-- **Honeypot bot detection**: Hidden form fields catch automated submissions
-- **Multi-layer brute-force protection**:
-  - IP-based rate limiting
-  - Device fingerprint tracking
-  - Email-specific attempt limits
-- **Structured logging**: Pino child loggers with context (userId, IP, deviceId) for forensics
-
-Security isn't a feature. It's the foundation.
-
-### 🐳 Dockerized Development Environment
-
-**One command to rule them all.**
-
-```bash
-docker-compose up --build
-```
-
-This starts:
-- **Backend** (Express API) → `localhost:3001`
-- **Frontend** (Next.js 15) → `localhost:3000`
-- **Database** (PostgreSQL) → `localhost:5432`
-- **Cache** (Redis) → `localhost:6379`
-
-No "works on my machine" problems. No manual service setup. The entire stack is orchestrated and reproducible.
-
-### ⚙️ CI/CD Ready
-
-**GitHub Actions pipelines for continuous integration.**
-
-- `backend-ci.yml`: Linting → Testing → Build verification on every PR
-- `frontend-ci.yml`: Next.js build checks and TypeScript validation
-- **Deployment ready**: Docker images push to registry, SSH to production server, zero-downtime deployment
-
-Production-grade automation from day one.
+- **Next.js 15** with App Router
+- **React 19** for component structure
+- **Tailwind CSS 4** for styling
+- **Chart.js** for data visualization
+- **Responsive Design** for all devices
 
 ---
 
 ## 🛠️ Tech Stack
 
 ### Backend
-- **Runtime**: Node.js 18+ with TypeScript 5.3
-- **Framework**: Express.js with async/await error handling
-- **Authentication**: Argon2 (password hashing) + Redis (session store)
-- **Validation**: Zod schemas for all inputs
-- **Logging**: Pino with structured child loggers
-- **Database**: PostgreSQL (Supabase) with `service_role` bypass
-- **Cache**: Redis for sessions and rate limiting
-- **Environment**: Docker Compose orchestration
+- **Runtime**: Node.js 18+ with TypeScript 5.9
+- **Framework**: Express.js 5.1 with Helmet security headers
+- **Database**: Supabase (PostgreSQL) with Row Level Security
+- **Cache & Session Store**: Upstash Redis
+- **Password Hashing**: Argon2
+- **Validation**: Zod schemas
+- **Logging**: Pino with structured logging
+- **Rate Limiting**: Redis-backed per-endpoint configuration
 
 ### Frontend
 - **Framework**: Next.js 15 (App Router) with Turbopack
-- **UI Library**: React 19
-- **Styling**: Tailwind CSS 4 with shadcn/ui components (CVA, clsx, tailwind-merge)
-- **HTTP Client**: Custom `apiClient` fetch wrapper with credentials
-- **Middleware**: Cookie forwarding for session management
+- **Runtime**: React 19
+- **Styling**: Tailwind CSS 4
+- **UI Components**: Class Variance Authority (CVA), Clsx, Tailwind Merge
+- **Animations**: Motion library
+- **Charts**: Chart.js 4 with React wrapper
+- **Icons**: Lucide React
+- **Responsive Design**: Mobile-first with full responsiveness
 
-### DevOps
-- **Containerization**: Docker + Docker Compose
-- **CI/CD**: GitHub Actions (linting, testing, building)
-- **Deployment**: (Planned) Docker image push + SSH deployment
+### DevOps & Infrastructure
+- **Containerization**: Docker with multi-stage builds
+- **Orchestration**: Docker Compose for local development
+- **Environment Management**: .env and .env.local for secrets
+- **Development**: Live reload for both frontend and backend
 
 ---
 
@@ -175,35 +105,34 @@ Production-grade automation from day one.
 
 ### Prerequisites
 
-- **Docker** and **Docker Compose** installed
-- **Node.js 18+** (optional, for local TypeScript checking)
-- **Git**
+- Docker and Docker Compose
+- Git
 
-### 1. Clone the Repository
+### 1. Clone Repository
 
 ```bash
-git clone https://github.com/melihilker/solopreneur.git
-cd solopreneur
+git clone https://github.com/melihilker/Solopreneur.git
+cd Solopreneur
 ```
 
-### 2. Configure Environment Variables
+### 2. Environment Configuration
 
-Create `.env` files in the appropriate directories:
+Create `.env` files for backend and frontend:
 
 **Backend (`/backend/.env`):**
 ```env
 NODE_ENV=development
 PORT=3001
 
-# Database (Supabase with service_role key)
-DATABASE_URL=postgresql://solouser:solopass@db:5432/solodb
-SUPABASE_SERVICE_ROLE_KEY=your_service_role_key_here
+# Supabase Configuration
+SUPABASE_URL=your_supabase_url
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 
-# Redis (session store)
-REDIS_URL=redis://cache:6379
+# Upstash Redis Configuration
+UPSTASH_REDIS_REST_URL=your_upstash_redis_rest_url
+UPSTASH_REDIS_REST_TOKEN=your_upstash_redis_rest_token
 
-# Security
-SESSION_SECRET=your_secure_random_string_min_32_chars
+# CORS Configuration
 CORS_ORIGIN=http://localhost:3000
 ```
 
@@ -212,23 +141,17 @@ CORS_ORIGIN=http://localhost:3000
 NEXT_PUBLIC_API_URL=http://localhost:3001
 ```
 
-> **Note**: Use Docker service names (`db`, `cache`, `backend`) as hostnames. Docker Compose handles DNS resolution.
-
-### 3. Start the Stack
+### 3. Start Application
 
 ```bash
 docker-compose up --build
 ```
 
-The entire application will be available at:
+Access the application:
 - **Frontend**: http://localhost:3000
 - **Backend API**: http://localhost:3001
-- **Database**: `localhost:5432`
-- **Redis**: `localhost:6379`
 
-Hot reload is enabled for both frontend and backend. Changes are reflected instantly.
-
-### 4. Verify the Setup
+### 4. Verify Setup
 
 ```bash
 # Check running containers
@@ -239,68 +162,247 @@ docker-compose logs -f backend
 docker-compose logs -f frontend
 ```
 
-You're ready to develop.
+---
+
+## 📁 Project Structure
+
+```
+solopreneur/
+├── backend/
+│   ├── src/
+│   │   ├── modules/          # Feature modules
+│   │   ├── config/           # Configuration
+│   │   ├── shared/           # Shared utilities and types
+│   │   └── main.ts           # Entry point
+│   ├── Dockerfile            # Docker configuration
+│   ├── tsconfig.json         # TypeScript configuration
+│   └── package.json          # Dependencies
+│
+├── frontend/
+│   ├── app/                  # Next.js App Router
+│   ├── components/           # Reusable components
+│   ├── public/               # Static assets
+│   ├── Dockerfile            # Docker configuration
+│   ├── tailwind.config.ts    # Tailwind configuration
+│   └── package.json          # Dependencies
+│
+├── docker-compose.yml        # Service orchestration
+└── README.md                 # This file
+```
+
+---
+
+## 🔄 Development Workflow
+
+### Local Development
+
+```bash
+# Start all services
+docker-compose up
+
+# View logs from specific service
+docker-compose logs -f frontend
+docker-compose logs -f backend
+
+# Stop services
+docker-compose down
+
+# Rebuild after dependency changes
+docker-compose up --build
+```
+
+### Backend Development
+
+```bash
+cd backend
+
+# Install dependencies
+npm install
+
+# Run in development mode
+npm run dev
+
+# Build for production
+npm run build
+
+# Run tests
+npm run test
+```
+
+### Frontend Development
+
+```bash
+cd frontend
+
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+
+# Build for production
+npm run build
+```
+
+---
+
+## 📊 Database Architecture
+
+### Supabase PostgreSQL with Row Level Security
+
+- **Backend-Only Access**: Frontend has no direct database access
+- **All queries** go through backend API endpoints
+- **Row Level Security (RLS)**: Enabled on all tables with default-deny policy
+- **Service Role Key**: Only backend uses service role for administrative operations
+- **Type Safety**: Database types can be generated from Supabase for TypeScript
+
+### Core Tables
+
+- **users**: User accounts and authentication
+- **projects**: Project information and status tracking
+- **customers**: Client/customer information
+- **invoices**: Invoice records and payment tracking
+- **sessions**: User session management (stored in Redis)
+
+### Security Model
+
+The database operates on a "locked vault" principle:
+- Frontend cannot directly query any table
+- All business logic validation happens in backend services
+- User authorization checked before each operation
+- Data isolation enforced at the database level
+
+---
+
+## 🔐 Security-First Architecture
+
+Solopreneur is built with security as a foundational principle. Every layer implements specific security measures designed for production environments.
+
+### Authentication & Session Management
+
+- **Stateful Sessions**: Redis-based session store for full server control
+  - Sessions stored in Upstash Redis with configurable TTL (default: 7 days)
+  - Maximum 5 active sessions per user (configurable)
+  - Sessions can be invalidated instantly across all devices
+  - Full server-side control over session lifecycle
+  - No tokens stored in client-side storage (only HTTP-only cookies)
+
+- **Password Security**:
+  - Argon2 hashing algorithm for secure password storage
+  - Timing-safe comparison to prevent timing attacks
+  - Sensitive password data never logged or exposed in responses
+
+### Multi-Layer Brute-Force Protection
+
+- **IP-Based Blocking**:
+  - Tracks failed login attempts per IP address
+  - Automatic IP blocking after 5 failed attempts
+  - 30-minute lock duration per IP
+  - Tracked in Redis for atomic operations
+
+- **Device Fingerprinting**:
+  - Tracks login attempts per device/user agent
+  - Prevents automated attacks from specific devices
+  - Device blocking with configurable thresholds
+
+- **Account-Level Locking**:
+  - Temporary account locks after repeated failed attempts
+  - 30-minute lock-out period
+  - Logged for security audit trails
+
+### Database Security (Supabase PostgreSQL)
+
+- **Row Level Security (RLS)**: Default-deny policy on all tables
+  - Frontend cannot directly access database
+  - All data access through backend API with authorization
+  - Service role key used only for backend administrative operations
+  - Enforces data isolation at database level
+
+- **Input Validation**: Zod schemas for all API inputs
+  - Type-safe validation at request boundaries
+  - Consistent error responses without data leakage
+  - XSS and SQL injection prevention
+
+### API Security
+
+- **Rate Limiting**: Per-endpoint configuration with Redis tracking
+  - Login endpoint: 5 attempts per 15 minutes
+  - General endpoints: 20 requests per minute
+  - Prevents brute-force and credential stuffing
+  - Separate limits for different endpoint types
+
+- **CORS Protection**: Restricted cross-origin requests
+  - Only approved origins (configured in CORS_ORIGIN)
+  - Prevents unauthorized third-party access
+
+- **HTTP Security Headers**: Helmet.js integration
+  - Content Security Policy (CSP)
+  - X-Frame-Options to prevent clickjacking
+  - X-Content-Type-Options to prevent MIME sniffing
+  - X-XSS-Protection and other standard protections
+
+- **Cookie Security**:
+  - HTTP-only cookies (cannot be accessed by JavaScript)
+  - SameSite=strict to prevent CSRF attacks
+  - Secure flag in production
+  - 3-hour default session cookie age (configurable)
+
+### Honeypot Bot Detection
+
+- **Registration Form**: Hidden honeypot field catches automated submissions
+  - Bots filling all fields including hidden ones trigger security response
+  - IP and device automatically locked on honeypot detection
+  - Legitimate users ignore invisible fields, pass through
+
+### Infrastructure Security
+
+- **Docker Isolation**: Services run in isolated containers
+  - Non-root user privileges in containers
+  - Multi-stage builds for minimal image size
+  - Secrets managed through environment variables only
+
+- **Error Handling**: Safe error responses
+  - No stack traces exposed to clients
+  - Generic error messages prevent information leakage
+  - Detailed logs for debugging (backend only)
+
+### Logging & Monitoring
+
+- **Structured Logging**: Pino logger with contextual information
+  - Tracks user ID, IP address, device fingerprint in logs
+  - Separate log levels for development vs. production
+  - Helps with security incident investigation and forensics
+  - Correlation IDs for request tracing
 
 ---
 
 ## 🤝 Contributing
 
-We welcome contributions from developers who share our "bulletproof over convenient" philosophy.
-
-**Before contributing, please read:**
-
-📖 **[CONTRIBUTING.md](CONTRIBUTING.md)** — Understand our architectural principles, zero duct tape tolerance, and Git workflow.
-
-**Quick summary:**
-- No stateless JWT proposals (we're stateful by design)
-- No direct database access from frontend (locked vault principle)
-- No "one size fits all" solutions (everything is purpose-built)
-- Code must pass self-review before PR submission
-
-If you're looking for a quick tutorial project to pad your GitHub, this isn't it. If you want to contribute to production-grade architecture, welcome aboard.
-
----
-
-## 🗺️ Roadmap
-
-Want to see where this project is headed?
-
-📋 **[ROADMAP.md](ROADMAP.md)** — Explore the post-MVP vision including CI/CD pipelines, 2FA, audit logging, payment integration, and more.
-
-**Upcoming priorities:**
-- Projects module with time tracking
-- Customers module with relationship management
-- Email verification and password reset flows
-- Advanced admin dashboard
-- E2E testing with Playwright/Cypress
+Contributions are welcome. Please ensure:
+- Code follows TypeScript best practices
+- All inputs are validated with Zod schemas
+- Changes are tested before submission
+- Commit messages are clear and descriptive
 
 ---
 
 ## 📄 License
 
-This project is licensed under the **MIT License**. See [LICENSE](LICENSE) for details.
+This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
 
 ---
 
 ## 👨‍💻 Developer
 
-**Melih Ilker (Melly)**  
-Full-Stack Engineer
+**Melih Ilker**
 
 - GitHub: [@MelihIlker](https://github.com/MelihIlker)
 - Email: [melihilker9@gmail.com](mailto:melihilker9@gmail.com)
-- LinkedIn: [melihilker](https://www.linkedin.com/in/melihilker)
-- Stack Overflow: [mely](https://stackoverflow.com/users/31781322/mely)
 
 ---
 
-## 🙏 Acknowledgments
+## � Support
 
-Built with the understanding that **convenience is temporary, but architecture is forever.**
-
----
-
-**Questions? Found a security vulnerability?**  
-Open an issue or contact: [melihilker9@gmail.com](mailto:melihilker9@gmail.com)
+For questions or issues, please open an issue on GitHub or contact the developer.
 
 ---

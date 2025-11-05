@@ -1,6 +1,6 @@
-import { LOGIN_ATTEMPT_CONFIG, PREFIX_CONFIG } from "src/config/config";
-import { deleteCache, getCache, setCache, incrCache } from "src/lib/redis";
-import { authLogger } from "src/utils/logger";
+import { LOGIN_ATTEMPT_CONFIG, PREFIX_CONFIG } from "@config/config";
+import { deleteCache, getCache, setCache, incrCache } from "@lib/redis";
+import { authLogger } from "@utils/logger";
 
 /**
  * Service for tracking and limiting failed login attempts by IP, device, and email.

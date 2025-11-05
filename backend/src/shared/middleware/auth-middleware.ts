@@ -1,6 +1,6 @@
 import { sessionService } from "@modules/auth/services/session.service";
 import { Request, Response, NextFunction } from "express";
-import { authLogger } from "src/utils/logger";
+import { authLogger } from "@utils/logger";
 
 export async function AuthMiddleware(req: Request, res: Response, next: NextFunction) {
     authLogger.info('AuthMiddleware invoked');

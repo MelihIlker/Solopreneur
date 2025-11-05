@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { authService } from "../services/auth.service";
-import { authLogger } from "src/utils/logger";
-import { COOKIE_CONFIG } from "src/config/config";
+import { authLogger } from "@utils/logger";
+import { COOKIE_CONFIG } from "@config/config";
 
 export class AuthController {
   async me(req: Request, res: Response) {

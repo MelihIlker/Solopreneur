@@ -1,6 +1,6 @@
 import { Redis } from "@upstash/redis";
-import { REDIS_CONFIG } from "src/config/config";
-import { appLogger } from "src/utils/logger";
+import { REDIS_CONFIG } from "@config/config";
+import { appLogger } from "@utils/logger";
 
 /**
  * Upstash Redis client instance

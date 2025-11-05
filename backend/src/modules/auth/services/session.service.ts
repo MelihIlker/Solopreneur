@@ -8,9 +8,9 @@ import {
   smembersCache,
   scardCache,
   getRedisClient,
-} from "src/lib/redis";
-import { sessionLogger } from "src/utils/logger";
-import { PREFIX_CONFIG, SESSION_CONFIG } from "src/config/config";
+} from "@lib/redis";
+import { sessionLogger } from "@utils/logger";
+import { PREFIX_CONFIG, SESSION_CONFIG } from "@config/config";
 import { UserProfile } from "@shared/types/UserInterface";
 
 /**

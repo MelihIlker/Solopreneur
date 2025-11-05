@@ -1,7 +1,7 @@
 import { createUserSchema, UserProfile, userProfileSchema, userSchema } from "@shared/types/UserInterface";
-import { supabase } from "src/config/supabase/client";
-import { userLogger } from "src/utils/logger";
-import { mapDbToSchema, mapSchemaToDb } from "src/utils/mapper";
+import { supabase } from "@config/supabase/client";
+import { userLogger } from "@utils/logger";
+import { mapDbToSchema, mapSchemaToDb } from "@utils/mapper";
 import { z } from "zod";
 
 type User = z.infer<typeof userSchema>;

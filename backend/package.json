@@ -1,7 +1,8 @@
 {
   "scripts": {
     "dev": "ts-node-dev -r tsconfig-paths/register src/main.ts",
-    "start": "node dist/main.js",
+    "build": "tsc",
+    "start": "node -r tsconfig-paths/register dist/main.js",
     "test": "jest",
     "lint": "eslint cls. --ext .ts",
     "format": "prettier --write \"src/**/*.ts\""

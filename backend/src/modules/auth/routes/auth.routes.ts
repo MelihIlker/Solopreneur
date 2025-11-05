@@ -4,7 +4,7 @@ import { emailBlocklistMiddleware } from "@shared/middleware/email-block.middlew
 import { ipBlocklistMiddleware } from "@shared/middleware/ip-block.middleware";
 import { AuthMiddleware } from "@shared/middleware/auth-middleware";
 import { createRateLimitMiddleware } from "@shared/middleware/createRateLimit.middleware";
-import { LOOSE_RATE_LIMIT_CONFIG, RATE_LIMIT_CONFIG } from "src/config/config";
+import { LOOSE_RATE_LIMIT_CONFIG, RATE_LIMIT_CONFIG } from "@config/config";
 
 const authRouter = Router();
 

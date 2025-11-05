@@ -1,13 +1,32 @@
 @import "tailwindcss";
 
+@layer base {
+  :root {
+    --color-primary: #16a34a;
+    --color-primary-dark: #15803d;
+    --color-error: #dc2626;
+    --color-warning: #d97706;
+    --color-info: #2563eb;
+    
+    --color-gray-100: #f3f4f6;
+    --color-gray-200: #e5e7eb;
+    --color-gray-400: #9ca3af;
+    --color-gray-600: #4b5563;
+    --color-gray-700: #374151;
+    --color-gray-800: #1f2937;
+    --color-gray-900: #111827;
+    --color-white: #ffffff;
+  }
+}
+
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
   /* Light theme variables */
-  --color-primary: #00a63e; /* Green */
-  --color-primary-dark: #16a34a;
+  --color-primary: #16a34a; /* Green */
+  --color-primary-dark: #15803d;
   --color-primary-light: rgb(32, 207, 93);
   --color-secondary: #111827; /* Black */
   --color-background: #ffffff; /* White */
@@ -22,10 +41,10 @@
 
 .dark {
   /* Dark theme variables */
-  --color-primary: #4ade80; /* Green */
-  --color-primary-dark: #22c55e;
+  --color-primary: #16a34a; /* Green - same in both themes */
+  --color-primary-dark: #15803d;
   --color-secondary: #1f2937; /* Dark gray */
   --color-background: #111827; /* Gray */
-  --color-text: #f9fafb;
-  --color-text-secondary: #e5e7eb;
+  --color-text: #f3f4f6;
+  --color-text-secondary: #9ca3af;
 }
